@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WorldTrotter</title>
+  <style>
+    #chat-log {
+      height: 66.67vh;
+      overflow-y: auto;
+    }
+    #message {
+      width: 66.67%;
+    }
+  </style>
+</head>
+<body>
+  <h1>GlobeWhiz is here to help you plan your next trip!</h1>
+  <div id="chat-log">
+    <p>Whiz: Where do you feel like going today?</p>
+  </div>
+  <form id="chat-form" action="/chat" method="post">
+    <label for="message">How may I help?</label><br>
+    <input type="text" id="message" name="message">
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('chat-form').addEventListener('submit', async (event) => {
+      event.preventDefault(); // Prevent default form submission
+      const messageInput = document.getElementById('message');
+      const message = messageInput.value;
+      messageInput.value = ''; // Clear input field
+
+      const chatLog = document.getElementById('chat-log');
+      chatLog.innerHTML += '<p>You: ' + message + '</p>'; // Display user message
+
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message: message }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        chatLog.innerHTML += '<p>Whiz: ' + data.response + '</p>'; // Display bot response
+
+      } catch (error) {
+        console.error('Error:', error);
+        chatLog.innerHTML += '<p>Bot: An error occurred.</p>';
+      }
+    });
+  </script>
+</body>
+</html> 
