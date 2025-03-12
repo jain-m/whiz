@@ -11,8 +11,8 @@ GlobeWhiz is an interactive chatbot that helps users plan their travels using AI
 ## Setup
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/globewhiz.git
-cd globewhiz
+git clone https://github.com/jain-m/whiz.git
+cd whiz
 ```
 
 2. Install dependencies:
