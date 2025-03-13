@@ -1,14 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const axios = require('axios');
 const path = require('path');
-require('dotenv').config();
+const { LMStudioClient } = require('@lmstudio/sdk');
 
 const app = express();
 const port = 3000;
 
+// Initialize LMStudio client following https://lmstudio.ai/docs/typescript
+const client = new LMStudioClient();
+
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // For parsing form data
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
 // Serve HTML page
@@ -33,34 +35,18 @@ app.post('/chat', async (req, res) => {
 });
 
 async function processMessage(message) {
-  const apiKey = process.env.OPENAI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is not set in environment variables.');
-  }
-
   try {
-    const openaiResponse = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: message }],
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-      }
-    );
-
-    return openaiResponse.data.choices[0].message.content;
+    const model = await client.llm.model("deepseek-r1-distill-qwen-7b");
+    console.log("Asking:", message);
+    const result = await model.respond(message);
+    return result.content;
   } catch (error) {
-    console.error('OpenAI API Error:', error.response ? error.response.data : error.message);
+    console.error('LMStudio Error:', error);
     throw error;
   }
 }
 
 app.listen(port, () => {
   console.log(`Chatbot listening at http://localhost:${port}`);
+  console.log('Make sure LMStudio desktop app is running with deepseek-r1-distill-qwen-7b model loaded');
 });

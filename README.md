@@ -1,17 +1,12 @@
-# GlobeWhiz - Your AI Travel Companion
+# Whiz
 
-GlobeWhiz is an interactive chatbot that helps users plan their travels using AI. Built with Express.js and OpenAI's GPT-3.5, it provides personalized travel suggestions and advice.
-
-## Features
-- Real-time chat interface
-- AI-powered travel recommendations
-- Simple and intuitive UI
-- Responsive design
+A travel chatbot powered by LMStudio's local AI model.
 
 ## Setup
+
 1. Clone the repository:
 ```bash
-git clone https://github.com/jain-m/whiz.git
+git clone https://github.com/yourusername/whiz.git
 cd whiz
 ```
 
@@ -20,23 +15,30 @@ cd whiz
 npm install
 ```
 
-3. Create a `.env` file in the root directory and add your OpenAI API key:
-```
-OPENAI_API_KEY=your_api_key_here
-```
+3. Set up LMStudio:
+   - Download and install [LMStudio Desktop](https://lmstudio.ai/)
+   - Launch LMStudio
+   - Load the `deepseek-r1-distill-qwen-7b` model
 
-4. Start the server:
+4. Start the development server:
 ```bash
-node index.js
+npm run dev
 ```
 
-5. Open your browser and visit `http://localhost:3000`
+5. Open http://localhost:3000 in your browser
+
+## Features
+- Chat interface for travel-related queries
+- Powered by local AI model (no API keys needed)
+- Real-time responses
+- Node.js/Express backend
+- Simple HTML/JS frontend
 
 ## Dependencies
-- Express.js
-- Axios
-- dotenv
+- @lmstudio/sdk
+- express
 - body-parser
+- nodemon (dev dependency)
 
 ## Contributing
 Feel free to submit issues and pull requests.
