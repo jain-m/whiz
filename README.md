@@ -1,6 +1,7 @@
 # Whiz
 
-A travel chatbot powered by LMStudio's local AI model.
+A chatbot powered by LMStudio's local AI model.
+Source code at https://github.com/jain-m/whiz
 
 ## Setup
 
