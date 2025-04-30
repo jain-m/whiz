@@ -1,58 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WorldTrotter</title>
+  <title>Chat with LMStudio</title>
   <style>
-    #chat-log {
-      height: 66.67vh;
-      overflow-y: auto;
-    }
-    #message {
-      width: 66.67%;
-    }
+    .chat-container { height: 100vh; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
+    .chat-messages { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; }
+    .chat-input-container { display: flex; gap: 10px; }
+    .input-wrapper { flex-grow: 1; display: flex; gap: 10px; }
+    #user-input { flex-grow: 1; padding: 8px; }
+    button { padding: 8px 16px; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-  <h1>GlobeWhiz is here to help you plan your next trip!</h1>
-  <div id="chat-log">
-    <p>Whiz: Where do you feel like going today?</p>
+  <div class="chat-container">
+    <div class="chat-messages" id="chat-messages"></div>
+    <form id="chat-form" onsubmit="sendMessage(event)">
+      <label>How can I help you?</label>
+      <div class="chat-input-container">
+        <div class="input-wrapper">
+          <input type="text" id="user-input" placeholder="Type your message...">
+        </div>
+        <button type="submit">Send</button>
+      </div>
+    </form>
   </div>
-  <form id="chat-form" action="/chat" method="post">
-    <label for="message">How may I help?</label><br>
-    <input type="text" id="message" name="message">
-    <button type="submit">Submit</button>
-  </form>
-  <script>
-    document.getElementById('chat-form').addEventListener('submit', async (event) => {
-      event.preventDefault(); // Prevent default form submission
-      const messageInput = document.getElementById('message');
-      const message = messageInput.value;
-      messageInput.value = ''; // Clear input field
 
-      const chatLog = document.getElementById('chat-log');
-      chatLog.innerHTML += '<p>You: ' + message + '</p>'; // Display user message
+  <script>
+    async function sendMessage(event) {
+      event.preventDefault();
+      const input = document.getElementById('user-input');
+      const message = input.value.trim();
+      
+      if (!message) return;
+
+      addMessage('User: ' + message);
+      input.value = '';
 
       try {
         const response = await fetch('/chat', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ message: message }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
         });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
         const data = await response.json();
-        chatLog.innerHTML += '<p>Whiz: ' + data.response + '</p>'; // Display bot response
-
+        if (data.error)
+          addMessage('Error: ' + data.error);
+        else
+          addMessage('Assistant: ' + data.response);
       } catch (error) {
         console.error('Error:', error);
-        chatLog.innerHTML += '<p>Bot: An error occurred.</p>';
+        addMessage('Error: Failed to send message');
       }
-    });
+    }
+
+    function addMessage(message) {
+      const messagesDiv = document.getElementById('chat-messages');
+      const messageElement = document.createElement('div');
+      
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      
+      if (message.startsWith('User: ')) {
+        messageElement.textContent = `[${timeString}] ${message}`;
+      } else if (message.startsWith('Assistant: ')) {
+        const assistantContent = message.replace('Assistant: ', '');
+        messageElement.innerHTML = `[${timeString}] Assistant: ` + marked.parse(assistantContent);
+      } else {
+        console.log("???:", message);
+        messageElement.textContent = message;
+      }
+      
+      messagesDiv.appendChild(messageElement);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
   </script>
 </body>
 </html> 

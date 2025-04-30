@@ -5,6 +5,7 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 
 const app = express();
 const port = 3000;
+const modelnm = 'deepseek-r1-distill-qwen-7b';
 
 // Initialize LMStudio client following https://lmstudio.ai/docs/typescript
 const client = new LMStudioClient();
@@ -19,11 +20,11 @@ app.get('/', (req, res) => {
 });
 
 app.post('/chat', async (req, res) => {
-  const message = req.body.message;
+  const { message } = req.body;
+  console.log("Received message:", message);
 
-  if (!message) {
+  if (!message)
     return res.status(400).send({ error: 'Message is required' });
-  }
 
   try {
     const response = await processMessage(message);
@@ -36,9 +37,10 @@ app.post('/chat', async (req, res) => {
 
 async function processMessage(message) {
   try {
-    const model = await client.llm.model("deepseek-r1-distill-qwen-7b");
-    console.log("Asking:", message);
+    const model = await client.llm.model(modelnm);
+    console.log("Using model:", model);
     const result = await model.respond(message);
+    console.log("Model response:", result);
     return result.content;
   } catch (error) {
     console.error('LMStudio Error:', error);
@@ -48,5 +50,5 @@ async function processMessage(message) {
 
 app.listen(port, () => {
   console.log(`Chatbot listening at http://localhost:${port}`);
-  console.log('Make sure LMStudio desktop app is running with deepseek-r1-distill-qwen-7b model loaded');
+  console.log(`Make sure LMStudio desktop app is running with '${modelnm}' model loaded`);
 });
